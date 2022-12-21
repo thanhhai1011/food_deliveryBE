@@ -15,11 +15,12 @@
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.11.0",
+    "mongoose": "^6.8.1",
     "morgan": "~1.9.1"
   },
   "projectConfig": {
     "mongoConnectionUrl": "mongodb://localhost:27017",
-    "serverIp": "192.168.1.13",
+    "serverIp": "192.168.80.46",
     "serverPort": 3000
   }
 }

@@ -1,11 +1,13 @@
 const { mongoConfig } = require("../config");
 const MongoDB = require("./mongodb.service");
+var mongoose = require('mongoose');
 
 const addBookmark = async ({ restaurantId, username }) => {
+  let restaurantID = mongoose.Types.ObjectId(restaurantId)
   try {
     let insertBookmark = await MongoDB.db
       .collection(mongoConfig.collections.BOOKMARKS)
-      .insertOne({ restaurantId, username });
+      .insertOne({ restaurantID, username });
     if (insertBookmark.insertedId) {
       let bookmarkResponse = await getBookmarks({ username });
       return {
@@ -56,8 +58,8 @@ const getBookmarks = async ({ username }) => {
         {
           $lookup: {
             from: "restaurants",
-            localField: "restaurantId",
-            foreignField: "id",
+            localField: "restaurantID",
+            foreignField: "_id",
             as: "restaurant",
           },
         },
