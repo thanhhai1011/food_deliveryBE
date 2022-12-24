@@ -43,7 +43,7 @@ const getOneRestaurantById = async (restaurantId) => {
         {
           $lookup: {
             from: "foods",
-            localField: "id",
+            localField: "_id",
             foreignField: "restaurantId",
             as: "foods",
           },

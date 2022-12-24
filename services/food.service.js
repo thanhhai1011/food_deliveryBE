@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const { mongoConfig } = require("../config");
 const MongoDB = require("./mongodb.service");
 
@@ -27,4 +28,36 @@ const getOneFoodById = async (foodId) => {
   }
 };
 
-module.exports = { getOneFoodById };
+const addFoodById = async (food) => {
+  let restaurantID = mongoose.Types.ObjectId(food?.restaurantId)
+  try {
+    if (!restaurantID)
+      return { status: false, message: "Please fill up restaurant the fields" };
+    let foodObject = {
+      restaurantId: restaurantID,
+      name: food?.name,
+      price: food?.price,
+      image: food?.image,
+      category: food?.category,
+      description: food?.description,
+      ingredients: food?.ingredients
+    };
+    let saveFood = await MongoDB.db
+      .collection(mongoConfig.collections.FOODS)
+      .insertOne(foodObject);
+    if (saveFood?.insertedId) {
+      return {
+        status: true,
+        message: "Foods added successfully",
+        data: foodObject,
+      };
+    }
+  } catch (error) {
+    return {
+      status: false,
+      message: "Item Added to Foods Failed",
+    };
+  }
+};
+
+module.exports = { getOneFoodById, addFoodById };

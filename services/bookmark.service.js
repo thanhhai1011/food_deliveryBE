@@ -25,10 +25,11 @@ const addBookmark = async ({ restaurantId, username }) => {
 };
 
 const removeBookmark = async ({ restaurantId, username }) => {
+  let restaurantID = mongoose.Types.ObjectId(restaurantId)
   try {
     let removedBookmark = await MongoDB.db
       .collection(mongoConfig.collections.BOOKMARKS)
-      .deleteOne({ restaurantId, username });
+      .deleteOne({ restaurantID, username });
     if (removedBookmark?.deletedCount > 0) {
       let bookmarkResponse = await getBookmarks({ username });
       return {
