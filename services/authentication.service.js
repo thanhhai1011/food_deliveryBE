@@ -24,13 +24,13 @@ const userRegister = async (user) => {
         { expiresIn: "24h" }
       );
       return {
-        status: true,
+        status: "Success",
         message: "User registered successfully",
         data: token,
       };
     } else {
       return {
-        status: false,
+        status: "Failed",
         message: "User registered failed",
       };
     }
@@ -43,7 +43,7 @@ const userRegister = async (user) => {
       ? (errorMesage = "Email already exits")
       : null;
     return {
-      status: false,
+      status: "Failed",
       message: errorMesage,
       error: error?.toString(),
     };
@@ -53,7 +53,7 @@ const userRegister = async (user) => {
 const userLogin = async (user) => {
   try {
     if (!user?.username || !user?.password)
-      return { status: false, message: "Please fill up all the fields" };
+      return { status: "Failed", message: "Please fill up all the fields" };
     let userObject = await MongoDB.db
       .collection(mongoConfig.collections.USERS)
       .findOne({ username: user?.username });
@@ -66,29 +66,29 @@ const userLogin = async (user) => {
         let token = jwt.sign(
           { username: userObject?.username, email: userObject?.email },
           tokenSecret,
-          { expiresIn: "24h" }
+          { expiresIn: "48h" }
         );
         return {
-          status: true,
+          status: "Success",
           message: "User login successful",
           data: token,
         };
       } else {
         return {
-          status: false,
+          status: "Failed",
           message: "Incorrect password",
         };
       }
     } else {
       return {
-        status: false,
+        status: "Failed",
         message: "No user found",
       };
     }
   } catch (error) {
     console.log(error);
     return {
-      status: false,
+      status: "Failed",
       message: "User login failed",
       error: error?.toString(),
     };
@@ -106,8 +106,8 @@ const checkUserExist = async (query) => {
       .collection(mongoConfig.collections.USERS)
       .findOne(query);
     return !userObject
-      ? { status: true, message: `This ${queryType} is not taken` }
-      : { status: false, message: messages[queryType] };
+      ? { status: "Success", message: `This ${queryType} is not taken` }
+      : { status: "Failed", message: messages[queryType] };
   } catch (error) {}
 };
 
@@ -126,7 +126,7 @@ const tokenVerification = async (req, res, next) => {
       jwt.verify(token, config.tokenSecret, (error, decoded) => {
         if (error) {
           res.status(401).json({
-            status: false,
+            status: "Failed",
             message: error?.name ? error?.name : "Invalid Token",
             error: `Invalid token | ${error?.message}`,
           });
@@ -137,14 +137,14 @@ const tokenVerification = async (req, res, next) => {
       });
     } else {
       res.status(401).json({
-        status: false,
+        status: "Failed",
         message: "Token is missing",
         error: "Token is missing",
       });
     }
   } catch (error) {
     res.status(401).json({
-      status: false,
+      status: "Failed",
       message: error?.message ? error?.message : "Authentication failed",
       error: `Authentication failed | ${error?.message}`,
     });
@@ -164,7 +164,7 @@ const tokenRefresh = async (req, res) => {
         async (error, decoded) => {
           if (error) {
             res.status(401).json({
-              status: false,
+              status: "Failed",
               message: error?.name ? error?.name : "Invalid Token",
               error: `Invalid token | ${error?.message}`,
             });
@@ -176,13 +176,13 @@ const tokenRefresh = async (req, res) => {
                 { expiresIn: "24h" }
               );
               res.json({
-                status: true,
+                status: "Success",
                 message: "Token refresh successful",
                 data: newToken,
               });
             } else {
               res.status(401).json({
-                status: false,
+                status: "Failed",
                 message: error?.name ? error?.name : "Invalid Token",
                 error: `Invalid token | ${error?.message}`,
               });
@@ -192,17 +192,45 @@ const tokenRefresh = async (req, res) => {
       );
     } else {
       res.status(401).json({
-        status: false,
+        status: "Failed",
         message: error?.name ? error?.name : "Token missing",
         error: `Token missing | ${error?.message}`,
       });
     }
   } catch (error) {
     res.status(401).json({
-      status: false,
+      status: "Failed",
       message: error?.name ? error?.name : "Token refresh failed",
       error: `Token refresh failed | ${error?.message}`,
     });
+  }
+};
+
+const getAllUser = async () => {
+  try {
+    let users = await MongoDB.db
+      .collection(mongoConfig.collections.USERS)
+      .find()
+      .toArray();
+
+    if (users && users?.length > 0) {
+      return {
+        status: "Success",
+        message: "users successfully",
+        data: users,
+      };
+    } else {
+      return {
+        status: "Failed",
+        message: "No users found",
+      };
+    }
+  } catch (error) {
+    return {
+      status: "Failed",
+      message: "users finding failed",
+      error: `users finding failed : ${error?.message}`,
+    };
   }
 };
 
@@ -212,4 +240,5 @@ module.exports = {
   checkUserExist,
   tokenVerification,
   tokenRefresh,
+  getAllUser
 };

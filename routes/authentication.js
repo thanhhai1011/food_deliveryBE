@@ -4,7 +4,8 @@ const {
   userRegister,
   userLogin,
   checkUserExist,
-  tokenRefresh
+  tokenRefresh,
+  getAllUser
 } = require("../services/authentication.service");
 
 router.post("/register", async (req, res, next) => {
@@ -25,6 +26,11 @@ router.get("/user-exist", async (req, res, next) => {
   res.json(response);
 });
 
-router.post("/refresh-token", tokenRefresh)
+router.post("/refresh-token", tokenRefresh);
+
+router.post("/all-user", async (req, res) => {
+  let response = await getAllUser();
+  res.json(response);
+});
 
 module.exports = router;

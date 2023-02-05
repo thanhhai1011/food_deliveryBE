@@ -1,3 +1,4 @@
+require('dotenv').config()
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -11,6 +12,7 @@ var restaurantRouter = require("./routes/restaurant.route");
 var cartRouter = require("./routes/cart.route");
 var foodRouter = require("./routes/food.route");
 var bookmarkRouter = require("./routes/bookmark.route");
+var billRouter = require("./routes/bill.route");
 const MongoDB = require("./services/mongodb.service");
 
 MongoDB.connectToMongoDB();
@@ -28,7 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors());
-app.use(express.static('static'));
+app.use(express.static("static"));
 
 app.use("*", require("./services/authentication.service").tokenVerification);
 
@@ -39,6 +41,7 @@ app.use("/api/restaurant", restaurantRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/food", foodRouter);
 app.use("/api/bookmark", bookmarkRouter);
+app.use("/api/bill", billRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

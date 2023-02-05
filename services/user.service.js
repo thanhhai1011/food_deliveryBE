@@ -9,19 +9,19 @@ const getUserData = async (username) => {
 
     if (userObject) {
       return {
-        status: true,
+        status: "Success",
         message: "User found successfully",
         data: userObject,
       };
     } else {
       return {
-        status: false,
+        status: "Failed",
         message: "No user found",
       };
     }
   } catch (error) {
     return {
-      status: false,
+      status: "Failed",
       message: "User finding failed",
       error: `User finding failed : ${error?.message}`,
     };

@@ -1,6 +1,7 @@
 const { ObjectId } = require("mongodb");
 const { mongoConfig } = require("../config");
 const MongoDB = require("./mongodb.service");
+const { default: mongoose } = require("mongoose");
 
 const getAllRestaurant = async () => {
   try {
@@ -11,19 +12,19 @@ const getAllRestaurant = async () => {
 
     if (restaurants && restaurants?.length > 0) {
       return {
-        status: true,
+        status: "Success",
         message: "Restaurants found successfully",
         data: restaurants,
       };
     } else {
       return {
-        status: false,
+        status: "Failed",
         message: "No restaurants found",
       };
     }
   } catch (error) {
     return {
-      status: false,
+      status: "Failed",
       message: "Restaurants finding failed",
       error: `Restaurants finding failed : ${error?.message}`,
     };
@@ -37,7 +38,7 @@ const getOneRestaurantById = async (restaurantId) => {
       .aggregate([
         {
           $match: {
-            _id: ObjectId(restaurantId)
+            _id: ObjectId(restaurantId),
           },
         },
         {
@@ -49,7 +50,7 @@ const getOneRestaurantById = async (restaurantId) => {
           },
         },
       ])
-      .toArray()
+      .toArray();
     if (restaurant && restaurant?.length > 0) {
       return {
         status: true,
@@ -73,13 +74,13 @@ const getOneRestaurantById = async (restaurantId) => {
 
 const addToRestaurant = async (restaurant) => {
   try {
-    if (!restaurant?.name)
-      return { status: false, message: "Please fill up all the fields" };
+    // if (!restaurant?.name)
+    //   return { status: false, message: "Please fill up all the fields" };
     let restaurantObject = {
       name: restaurant?.name,
       type: restaurant?.type,
       tags: restaurant?.tags,
-      location: restaurant?.tags,
+      location: restaurant?.location,
       distance: restaurant?.distance,
       time: restaurant?.time,
       categories: restaurant?.categories,
@@ -88,8 +89,11 @@ const addToRestaurant = async (restaurant) => {
     let saveRestaurant = await MongoDB.db
       .collection(mongoConfig.collections.RESTAURANTS)
       .insertOne(restaurantObject);
-    saveRestaurant = {...saveRestaurant, insertedId: saveRestaurant?.insertedId.toString()}
-    console.log('saveRestaurant', saveRestaurant);
+    saveRestaurant = {
+      ...saveRestaurant,
+      insertedId: saveRestaurant?.insertedId.toString(),
+    };
+    console.log("saveRestaurant", saveRestaurant);
     if (saveRestaurant?.insertedId) {
       let restaurantResponse = await getAllRestaurant();
       return {
@@ -106,4 +110,93 @@ const addToRestaurant = async (restaurant) => {
   }
 };
 
-module.exports = { getAllRestaurant, getOneRestaurantById, addToRestaurant };
+const getOneFoodRestaurantById = async (restaurantId) => {
+  try {
+    let restaurant = await MongoDB.db
+      .collection(mongoConfig.collections.RESTAURANTS)
+      .aggregate([
+        {
+          $match: {
+            _id: ObjectId(restaurantId),
+          },
+        },
+        {
+          $lookup: {
+            from: "foods",
+            localField: "_id",
+            foreignField: "restaurantId",
+            as: "foods",
+          },
+        },
+      ])
+      .toArray();
+    console.log("restaurant 1: ", restaurant);
+    if (restaurant && restaurant?.length > 0) {
+      return {
+        status: true,
+        message: "Restaurants found successfully 1 ",
+        data: restaurant[0]?.foods,
+      };
+    } else {
+      return {
+        status: false,
+        message: "No restaurants found",
+      };
+    }
+  } catch (error) {
+    return {
+      status: false,
+      message: "Restaurants finding failed",
+      error: `Restaurants finding failed : ${error?.message}`,
+    };
+  }
+};
+
+const removeFoodFromRestaurant = async (data, { username }) => {
+  let foodID = mongoose.Types.ObjectId(data?.foodId);
+  const restaurantId = data?.restaurantId
+  try {
+    let restaurant = await MongoDB.db
+      .collection(mongoConfig.collections.RESTAURANTS)
+      .aggregate([
+        {
+          $match: {
+            _id: ObjectId(restaurantId),
+          },
+        },
+        {
+          $lookup: {
+            from: "foods",
+            localField: "_id",
+            foreignField: "restaurantId",
+            as: "foods",
+          },
+        },
+      ])
+      .toArray();
+    if (restaurant) {
+      await MongoDB.db
+        .collection(mongoConfig.collections.FOODS)
+        .deleteOne({ _id: foodID });
+      let restaurantResponse = await getOneRestaurantById(restaurantId);
+      return {
+        status: "Success",
+        message: "Item Removed Food from Restaurant Successfully",
+        data: restaurantResponse,
+      };
+    }
+  } catch (error) {
+    return {
+      status: "Failed",
+      message: "Item Removed from Restaurant Failed",
+    };
+  }
+};
+
+module.exports = {
+  getAllRestaurant,
+  getOneRestaurantById,
+  addToRestaurant,
+  getOneFoodRestaurantById,
+  removeFoodFromRestaurant
+};
