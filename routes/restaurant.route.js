@@ -4,7 +4,7 @@ const {
   getOneRestaurantById,
   addToRestaurant,
   getOneFoodRestaurantById,
-  removeFoodFromRestaurant,
+  removeRestaurant,
 } = require("../services/restaurant.service");
 var router = express.Router();
 
@@ -45,8 +45,8 @@ router.post("/:restaurantId", async (req, res) => {
   res.json(response);
 });
 
-router.delete("/:restaurantId", async (req, res) => {
-  let { restaurantId } = req?.params;
+router.delete("/delete/:restaurantId", async (req, res) => {
+  let restaurantId  = req?.params?.restaurantId;
   let response = await removeRestaurant({ restaurantId });
   res.json(response);
 });

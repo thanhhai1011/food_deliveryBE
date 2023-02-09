@@ -1,5 +1,5 @@
 var express = require("express");
-const { getOneFoodById, addFoodById, getAllFood } = require("../services/food.service");
+const { getOneFoodById, addFoodById, removeFood } = require("../services/food.service");
 var router = express.Router();
 
 router.get("/:foodId", async (req, res) => {
@@ -21,11 +21,10 @@ router.post("/:foodId", async (req, res) => {
   res.json(response);
 });
 
-// router.post("/:restaurantId", async (req, res) => {
-//   let restaurantId = req?.params?.restaurantId;
-//   console.log('restaurantId: ', restaurantId);
-//   let response = await getAllFood(restaurantId);
-//   res.json(response);
-// });
+router.delete("/deleteFood", async (req, res) => {
+  let body  = req?.body;
+  let response = await removeFood(body);
+  res.json(response);
+});
 
 module.exports = router;

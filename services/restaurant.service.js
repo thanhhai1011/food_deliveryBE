@@ -111,6 +111,7 @@ const addToRestaurant = async (restaurant) => {
 };
 
 const getOneFoodRestaurantById = async (restaurantId) => {
+  console.log('restaurantId getOneFoodRestaurantById: ', restaurantId);
   try {
     let restaurant = await MongoDB.db
       .collection(mongoConfig.collections.RESTAURANTS)
@@ -152,43 +153,28 @@ const getOneFoodRestaurantById = async (restaurantId) => {
   }
 };
 
-const removeFoodFromRestaurant = async (data, { username }) => {
-  let foodID = mongoose.Types.ObjectId(data?.foodId);
-  const restaurantId = data?.restaurantId
+const removeRestaurant = async ({ restaurantId }) => {
   try {
-    let restaurant = await MongoDB.db
+    let removedRestaurant = await MongoDB.db
       .collection(mongoConfig.collections.RESTAURANTS)
-      .aggregate([
-        {
-          $match: {
-            _id: ObjectId(restaurantId),
-          },
-        },
-        {
-          $lookup: {
-            from: "foods",
-            localField: "_id",
-            foreignField: "restaurantId",
-            as: "foods",
-          },
-        },
-      ])
-      .toArray();
-    if (restaurant) {
-      await MongoDB.db
-        .collection(mongoConfig.collections.FOODS)
-        .deleteOne({ _id: foodID });
-      let restaurantResponse = await getOneRestaurantById(restaurantId);
+      .deleteOne({ "_id": ObjectId(restaurantId) });
+    if (removedRestaurant?.deletedCount > 0) {
+      let restaurantResponse = await getAllRestaurant();
       return {
-        status: "Success",
-        message: "Item Removed Food from Restaurant Successfully",
-        data: restaurantResponse,
+        status: true,
+        message: "Restaurant Removed Successfully",
+        data: restaurantResponse?.data
       };
+    } else {
+      return {
+        status: false,
+        message: 'Restaurant Removed Failed'
+      }
     }
   } catch (error) {
     return {
-      status: "Failed",
-      message: "Item Removed from Restaurant Failed",
+      status: false,
+      message: "Restaurant Removed Failed",
     };
   }
 };
@@ -198,5 +184,5 @@ module.exports = {
   getOneRestaurantById,
   addToRestaurant,
   getOneFoodRestaurantById,
-  removeFoodFromRestaurant
+  removeRestaurant
 };
