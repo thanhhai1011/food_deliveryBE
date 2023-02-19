@@ -6,7 +6,7 @@
 
 var app = require('../app');
 var debug = require('debug')('foodelivery-backend:server');
-const http = require('https');
+const http = require('http');
 const {serverConfig} = require("../config")
 // const fs = require('fs');
 // const options = {

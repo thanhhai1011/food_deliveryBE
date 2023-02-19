@@ -22,8 +22,8 @@
         "nodemailer": "^6.9.1"
     },
     "projectConfig": {
-        "mongoConnectionUrl": "mongodb://mongodb-endm-5uwl-production",
-        "serverIp": "bv4h2sv751.execute-api.us-east-2.amazonaws.com/",
-        "serverPort": 3000
+        "mongoConnectionUrl": "mongodb+srv://malongnhan:malongnhan@malongnhan.uslm5rr.mongodb.net/test",
+        "serverIp": "localhost",
+        "serverPort": 8080
     }
 }
