@@ -22,7 +22,7 @@
         "nodemailer": "^6.9.1"
     },
     "projectConfig": {
-        "mongoConnectionUrl": "mongodb://localhost:27017",
+        "mongoConnectionUrl": "mongodb://mongodb-endm-5uwl-production",
         "serverIp": "localhost",
         "serverPort": 8080
     }
