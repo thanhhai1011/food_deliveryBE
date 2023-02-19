@@ -31,9 +31,7 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port, () => {
-  console.log('Hello!');
-});
+server.listen(serverConfig.port, serverConfig.ip);
 server.on('error', onError);
 server.on('listening', onListening);
 
@@ -93,5 +91,5 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
-  console.log(`FooDelivery App is listening at http://${serverConfig.ip}:${port}`);
+  console.log(`FooDelivery App is listening at http://${serverConfig.ip}:${serverConfig.port}`);
 }
