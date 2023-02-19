@@ -23,7 +23,7 @@
     },
     "projectConfig": {
         "mongoConnectionUrl": "mongodb://mongodb-endm-5uwl-production",
-        "serverIp": "localhost",
-        "serverPort": 8080
+        "serverIp": "bv4h2sv751.execute-api.us-east-2.amazonaws.com/",
+        "serverPort": 3000
     }
 }
