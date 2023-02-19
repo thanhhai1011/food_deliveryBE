@@ -24,6 +24,6 @@
     "projectConfig": {
         "mongoConnectionUrl": "mongodb+srv://malongnhan:malongnhan@malongnhan.uslm5rr.mongodb.net/test",
         "serverIp": "localhost",
-        "serverPort": 8080
+        "serverPort": 3000
     }
 }
