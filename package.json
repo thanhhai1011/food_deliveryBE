@@ -22,7 +22,7 @@
         "nodemailer": "^6.9.1"
     },
     "projectConfig": {
-        "mongoConnectionUrl": "mongodb://localhost:27017",
+        "mongoConnectionUrl": "mongodb+srv://malongnhan:malongnhan@malongnhan.uslm5rr.mongodb.net/test",
         "serverIp": "localhost",
         "serverPort": 8080
     }
